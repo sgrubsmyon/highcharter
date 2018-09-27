@@ -46,7 +46,7 @@ Imports:
     lubridate,
     crosstalk,
     yaml,
-    rlang(>= 0.1.1),
+    rlang(>= 0.2.2),
     whisker
 Suggests:
     knitr,
