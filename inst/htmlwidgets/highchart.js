@@ -6,21 +6,11 @@ HTMLWidgets.widget({
   
   factory: function(el, width, height) {
     var initialized = false;
-    /*
-    var old_hc_opts = null;
-    */
     
     return {
       renderValue: function(x) {
         if (!initialized) {
           initialized = true;
-          
-          /*
-          // Create copy of object that may be modified w/o changing original object (not by reference)
-          old_hc_opts = Object.assign({}, x.hc_opts);
-          // Remove series, chart.marginBottom and chart.spacingBottom from the object
-          deleteIrrelevantKeys(old_hc_opts);
-          */
           
           // Code that shall run only once, every other run will simply update the data without a full redraw
           if (x.debug) {
@@ -106,30 +96,13 @@ HTMLWidgets.widget({
         } else {
           // Code that runs from the second run on
           
-          // Check if any option besides the series options was changed. In that
-          // case, it's unfortunately necessary to update the entire chart (slower)
-          
           // Create copy of object that may be modified w/o changing original object
           var new_hc_opts = Object.assign({}, x.hc_opts);
           // Delete series:
           delete new_hc_opts.series;
           
-          /*
-          // Remove series, chart.marginBottom and chart.spacingBottom from the object
-          deleteIrrelevantKeys(new_hc_opts);
-          console.log(objectEqual(old_hc_opts, new_hc_opts));
-          console.log(old_hc_opts);
-          console.log(new_hc_opts);
-          
-          if (!objectEqual(old_hc_opts, new_hc_opts)) {
-          */
-            // Update the entire chart (except the series) for changes in title etc.
-            $("#" + el.id).highcharts().update(new_hc_opts);
-          /*
-            // Set new hc_opts as the new old
-            old_hc_opts = Object.assign({}, new_hc_opts);
-          }
-          */
+          // Update the entire chart (except the series) for changes in title etc.
+          $("#" + el.id).highcharts().update(new_hc_opts);
           
           // Update the series without a full redraw
           var old_s_length = $("#" + el.id).highcharts().series.length;
@@ -163,32 +136,3 @@ HTMLWidgets.widget({
   }
 
 });
-
-/*
-function deleteIrrelevantKeys(obj) {
-  delete obj.series;
-  delete obj.chart.marginBottom;
-  delete obj.chart.spacingBottom;
-}
-
-function keysEqual(keys1, keys2) {
-  if (keys1.length != keys2.length) return false;
-  for (var i = 0; i < keys1.length; i++) {
-    if (keys1[i] != keys2[i]) return false;
-  }
-  return true;
-}
-          
-function objectEqual(obj1, obj2) {
-  if (!keysEqual(Object.keys(obj1), Object.keys(obj2))) return false;
-  for (let k of Object.keys(obj1)) {
-    if (typeof obj1[k] != typeof obj2[k]) return false;
-    if (obj1[k] === null || typeof obj1[k] != "object") {
-      if (obj1[k] != obj2[k]) {console.log(k); return false;}
-    } else {
-      if (!objectEqual(obj1[k], obj2[k])) {console.log(k); return false;}
-    }    
-  }
-  return true;
-}
-*/
