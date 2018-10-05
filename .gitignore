@@ -1,6 +1,7 @@
 # History files
 .Rhistory
 .Rapp.history
+.RData
 
 # html and rpubs
 dev/*.dcf
