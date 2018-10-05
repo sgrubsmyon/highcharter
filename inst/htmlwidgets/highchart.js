@@ -5,14 +5,32 @@ HTMLWidgets.widget({
   type: 'output',
   
   factory: function(el, width, height) {
-    var initialized = false;
+    var old_hc_opts = null;
+    var new_hc_opts = null;
     
     return {
       renderValue: function(x) {
-        if (!initialized) {
-          initialized = true;
+        // Code that runs on each run:
+        // Decide if a full redraw (actually new initialization) is needed (in the beginning, it's always the case)
+        
+        // Create copy of object that may be modified w/o changing original object
+        var new_hc_opts = Object.assign({}, x.hc_opts);
+        // Remove series, chart.marginBottom and chart.spacingBottom from the object
+        deleteIrrelevantKeys(new_hc_opts);
+        
+        if (x.debug) {
+          console.log("old and new hc_opts equal?", objectEqual(old_hc_opts, new_hc_opts));
+          console.log("old_hc_opts", old_hc_opts);
+          console.log("new_hc_opts", new_hc_opts);
+        }
+        
+        if (!objectEqual(old_hc_opts, new_hc_opts)) {
+          // Set new hc_opts as the new old
+          old_hc_opts = Object.assign({}, new_hc_opts);
           
-          // Code that shall run only once, every other run will simply update the data without a full redraw
+          // Code that shall run only in the beginning or if anything besides series data changes:
+          // (Every other run will simply update the data without a full redraw)
+          
           if (x.debug) {
             window.xclone = JSON.parse(JSON.stringify(x));
             window.elclone = $(el);
@@ -94,15 +112,7 @@ HTMLWidgets.widget({
         if (ct.style !== undefined && ct.style.color !== undefined) $(pc.find("#play-pause-button")[0]).css({color : x.theme.chart.style.color});
           }
         } else {
-          // Code that runs from the second run on
-          
-          // Create copy of object that may be modified w/o changing original object
-          var new_hc_opts = Object.assign({}, x.hc_opts);
-          // Delete series:
-          delete new_hc_opts.series;
-          
-          // Update the entire chart (except the series) for changes in title etc.
-          $("#" + el.id).highcharts().update(new_hc_opts);
+          // Code that runs from the second run on:
           
           // Update the series without a full redraw
           var old_s_length = $("#" + el.id).highcharts().series.length;
@@ -124,15 +134,47 @@ HTMLWidgets.widget({
       },
       
       resize: function(width, height) {
-        
         /* http://stackoverflow.com/questions/18445784/ */
         var chart = $("#" +el.id).highcharts();
         var w = chart.renderTo.clientWidth; 
         var h = chart.renderTo.clientHeight; 
         chart.setSize(w, h); 
-        
       }
     };
   }
 
 });
+
+function deleteIrrelevantKeys(obj) {
+  delete obj.series;
+  delete obj.chart.marginBottom;
+  delete obj.chart.marginLeft;
+  delete obj.chart.marginRight;
+  delete obj.chart.marginTop;
+  delete obj.chart.spacingBottom;
+  delete obj.chart.spacingLeft;
+  delete obj.chart.spacingRight;
+  delete obj.chart.spacingTop;
+}
+
+function keysEqual(keys1, keys2) {
+  if (keys1.length != keys2.length) return false;
+  for (var i = 0; i < keys1.length; i++) {
+    if (keys1[i] != keys2[i]) return false;
+  }
+  return true;
+}
+          
+function objectEqual(obj1, obj2) {
+  if (obj1 === null || obj2 === null) return false;
+  if (!keysEqual(Object.keys(obj1), Object.keys(obj2))) return false;
+  for (let k of Object.keys(obj1)) {
+    if (typeof obj1[k] != typeof obj2[k]) return false;
+    if (obj1[k] === null || typeof obj1[k] != "object") {
+      if (obj1[k] != obj2[k]) return false;
+    } else {
+      if (!objectEqual(obj1[k], obj2[k])) return false;
+    }    
+  }
+  return true;
+}
