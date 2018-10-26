@@ -147,14 +147,16 @@ HTMLWidgets.widget({
 
 function deleteIrrelevantKeys(obj) {
   delete obj.series;
-  delete obj.chart.marginBottom;
-  delete obj.chart.marginLeft;
-  delete obj.chart.marginRight;
-  delete obj.chart.marginTop;
-  delete obj.chart.spacingBottom;
-  delete obj.chart.spacingLeft;
-  delete obj.chart.spacingRight;
-  delete obj.chart.spacingTop;
+  if ('chart' in obj) {
+    delete obj.chart.marginBottom;
+    delete obj.chart.marginLeft;
+    delete obj.chart.marginRight;
+    delete obj.chart.marginTop;
+    delete obj.chart.spacingBottom;
+    delete obj.chart.spacingLeft;
+    delete obj.chart.spacingRight;
+    delete obj.chart.spacingTop;    
+  }
 }
 
 function keysEqual(keys1, keys2) {
