@@ -14,7 +14,7 @@ HTMLWidgets.widget({
         // Decide if a full redraw (actually new initialization) is needed (in the beginning, it's always the case)
         
         // Create copy of object that may be modified w/o changing original object
-        var new_hc_opts = Object.assign({}, x.hc_opts);
+        var new_hc_opts = JSON.parse(JSON.stringify(x.hc_opts));
         // Remove series, chart.marginBottom and chart.spacingBottom from the object
         deleteIrrelevantKeys(new_hc_opts);
         
@@ -26,7 +26,7 @@ HTMLWidgets.widget({
         
         if (!objectEqual(old_hc_opts, new_hc_opts)) {
           // Set new hc_opts as the new old
-          old_hc_opts = Object.assign({}, new_hc_opts);
+          old_hc_opts = JSON.parse(JSON.stringify(new_hc_opts));
           
           // Code that shall run only in the beginning or if anything besides series data changes:
           // (Every other run will simply update the data without a full redraw)
