@@ -168,7 +168,8 @@ function keysEqual(keys1, keys2) {
 function objectEqual(obj1, obj2) {
   if (obj1 === null || obj2 === null) return false;
   if (!keysEqual(Object.keys(obj1), Object.keys(obj2))) return false;
-  for (let k of Object.keys(obj1)) {
+  for (var i = 0; i < Object.keys(obj1).length; i++) {
+    var k = Object.keys(obj1)[i];
     if (typeof obj1[k] != typeof obj2[k]) return false;
     if (obj1[k] === null || typeof obj1[k] != "object") {
       if (obj1[k] != obj2[k]) return false;
